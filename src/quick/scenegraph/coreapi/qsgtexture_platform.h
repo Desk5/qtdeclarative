@@ -51,15 +51,20 @@ struct Q_QUICK_EXPORT QSGD3D11Texture
 };
 #endif
 
-#if defined(__OBJC__) || defined(Q_QDOC)
+#if defined(Q_OS_MAC) || defined(Q_QDOC)
 struct Q_QUICK_EXPORT QSGMetalTexture
 {
     QT_DECLARE_NATIVE_INTERFACE(QSGMetalTexture, 1, QSGTexture)
+#if defined(__OBJC__)
     virtual id<MTLTexture> nativeTexture() const = 0;
     static QSGTexture *fromNative(id<MTLTexture> texture,
                                   QQuickWindow *window,
                                   const QSize &size,
                                   QQuickWindow::CreateTextureOptions options = {});
+
+#else
+    virtual void *nativeTexture() const = 0;
+#endif
 };
 #endif
 

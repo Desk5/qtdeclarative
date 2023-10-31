@@ -60,14 +60,18 @@ public:
 };
 #endif
 
-#if defined(__OBJC__)
+#if defined(Q_OS_MACOS)
 class Q_QUICK_PRIVATE_EXPORT QSGTexturePlatformMetal : public QNativeInterface::QSGMetalTexture
 {
 public:
     QSGTexturePlatformMetal(QSGTexture *t) : m_texture(t) { }
     QSGTexture *m_texture;
 
+#if defined(__OBJC__)
     id<MTLTexture> nativeTexture() const override;
+#else
+    void *nativeTexture() const override;
+#endif
 };
 #endif
 
@@ -111,7 +115,7 @@ public:
 #ifdef Q_OS_WIN
     QSGTexturePlatformD3D11 m_d3d11TextureAccessor;
 #endif
-#if defined(__OBJC__)
+#if defined(Q_OS_MACOS)
     QSGTexturePlatformMetal m_metalTextureAccessor;
 #endif
 #if QT_CONFIG(vulkan)

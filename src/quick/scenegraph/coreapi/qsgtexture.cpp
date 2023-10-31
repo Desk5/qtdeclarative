@@ -84,7 +84,7 @@ QSGTexturePrivate::QSGTexturePrivate(QSGTexture *t)
 #ifdef Q_OS_WIN
     , m_d3d11TextureAccessor(t)
 #endif
-#if defined(__OBJC__)
+#if defined(Q_OS_MACOS)
     , m_metalTextureAccessor(t)
 #endif
 #if QT_CONFIG(vulkan)
@@ -841,7 +841,7 @@ void *QSGTexturePlatformD3D11::nativeTexture() const
 }
 #endif // win
 
-#if defined(__OBJC__) || defined(Q_QDOC)
+#if defined(Q_OS_MACOS) || defined(Q_QDOC)
 namespace QNativeInterface {
 /*!
     \class QNativeInterface::QSGMetalTexture
@@ -978,7 +978,7 @@ void *QSGTexture::resolveInterface(const char *name, int revision) const
 #if QT_CONFIG(vulkan)
     QT_NATIVE_INTERFACE_RETURN_IF(QSGVulkanTexture, &dd->m_vulkanTextureAccessor);
 #endif
-#if defined(__OBJC__)
+#if defined(Q_OS_MACOS)
     QT_NATIVE_INTERFACE_RETURN_IF(QSGMetalTexture, &dd->m_metalTextureAccessor);
 #endif
 #if defined(Q_OS_WIN)
