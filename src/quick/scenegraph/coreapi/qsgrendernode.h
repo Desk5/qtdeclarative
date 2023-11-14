@@ -29,7 +29,8 @@ public:
         BoundedRectRendering = 0x01,
         DepthAwareRendering = 0x02,
         OpaqueRendering = 0x04,
-        NoExternalRendering = 0x08
+        NoExternalRendering = 0x08,
+        SplitPassRendering = 0x10,
     };
     Q_DECLARE_FLAGS(RenderingFlags, RenderingFlag)
 

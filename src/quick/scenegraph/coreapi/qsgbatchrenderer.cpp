@@ -1165,6 +1165,10 @@ void Renderer::nodeWasAdded(QSGNode *node, Node *shadowParent)
         m_renderNodeElements.insert(e->renderNode, e);
         if (!rn->flags().testFlag(QSGRenderNode::DepthAwareRendering))
             m_forceNoDepthBuffer = true;
+        // The current implementation of split-pass rendering is not depth-aware.
+        // Hopefully we will implement layering at some point, we will remove this test then.
+        if (rn->flags().testFlag(QSGRenderNode::SplitPassRendering))
+            m_forceNoDepthBuffer = true;
         m_rebuild |= FullRebuild;
     }
 
@@ -3977,12 +3981,17 @@ void Renderer::renderRhiRenderNode(const Batch *batch)
     const QSGRenderNode::StateFlags changes = e->renderNode->changedStates();
 
     QRhiCommandBuffer *cb = renderTarget().cb;
+    const bool needsSplit = e->renderNode->flags().testFlag(QSGRenderNode::SplitPassRendering);
     const bool needsExternal = !e->renderNode->flags().testFlag(QSGRenderNode::NoExternalRendering);
+    if (needsSplit)
+        cb->endPass();
     if (needsExternal)
         cb->beginExternal();
     e->renderNode->render(&state);
     if (needsExternal)
         cb->endExternal();
+    if (needsSplit)
+        cb->beginPass(renderTarget().rt, m_pstate.clearColor, m_pstate.dsClear, nullptr, QRhiCommandBuffer::ExternalContent | QRhiCommandBuffer::DoNotClear);
 
     rd->m_matrix = nullptr;
     rd->m_clip_list = nullptr;
