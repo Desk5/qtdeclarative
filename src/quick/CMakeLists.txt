@@ -8,6 +8,7 @@
 qt_internal_add_qml_module(Quick
     URI "QtQuick"
     VERSION "${PROJECT_VERSION}"
+    CUSTOM_VERSION_TAG "DESK5=20231114"
     DESIGNER_SUPPORTED
     PLUGIN_TARGET qtquick2plugin
     NO_GENERATE_PLUGIN_SOURCE
