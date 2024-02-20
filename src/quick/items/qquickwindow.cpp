@@ -688,7 +688,7 @@ void QQuickWindowPrivate::renderSceneGraph()
     if (flipY)
         matrixFlags |= QSGAbstractRenderer::MatrixTransformFlipY;
 
-    const QRectF rect(QPointF(0, 0), pixelSize / devicePixelRatio);
+    const QRectF rect(QPointF(0, 0), QSizeF(pixelSize) / devicePixelRatio);
     renderer->setProjectionMatrixToRect(rect, matrixFlags, rhi && !rhi->isYUpInNDC());
 
     context->renderNextFrame(renderer);
