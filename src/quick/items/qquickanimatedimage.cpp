@@ -491,6 +491,11 @@ void QQuickAnimatedImagePrivate::setMovie(QMovie *m)
     }
     movie = m;
 
+    if (cache) {
+        qDeleteAll(frameMap);
+        frameMap.clear();
+    }
+
     if (oldFrameCount != q->frameCount())
         emit q->frameCountChanged();
 }
