@@ -667,13 +667,26 @@ QSGNode *QQuickShaderEffectSource::updatePaintNode(QSGNode *oldNode, UpdatePaint
     QRectF sourceRect = m_sourceRect.width() == 0 || m_sourceRect.height() == 0
                       ? QRectF(0, 0, m_sourceItem->width(), m_sourceItem->height())
                       : m_sourceRect;
-    m_texture->setRect(sourceRect);
     QQuickItemPrivate *d = static_cast<QQuickItemPrivate *>(QObjectPrivate::get(this));
     const float dpr = d->window->effectiveDevicePixelRatio();
     QSize textureSize = m_textureSize.isEmpty()
             ? QSize(qCeil(qAbs(sourceRect.width())), qCeil(qAbs(sourceRect.height()))) * dpr
             : m_textureSize;
     Q_ASSERT(!textureSize.isEmpty());
+
+    // Try to reduce fractional scaling artifacts. Applies only if the sourceRect was not specified:
+    // - m_texture->setRect() argument is used to compute the projection matrix. Specify a value derived
+    //   from the texture size, so that the scaling factor precisely matches dpr
+    // - apply a cropping rectangle to the texture so that a possibly fractional subrectangle is used
+    //   when sampling
+    QRectF subRect(0,0,1,1);
+    if(m_sourceRect.width() == 0 || m_sourceRect.height() == 0) {
+        QRectF rect(QPointF(0,0),QSizeF(textureSize) / dpr);
+        subRect = QRectF(0.0f, 0.0f, sourceRect.width() / rect.width(), sourceRect.height() / rect.height());
+        m_texture->setRect(rect);
+        m_texture->setSubRect(subRect);
+    } else
+        m_texture->setRect(sourceRect);
 
     const QSize minTextureSize = d->sceneGraphContext()->minimumFBOSize();
     // Keep power-of-two by doubling the size.

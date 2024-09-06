@@ -57,6 +57,8 @@ public:
     void scheduleUpdate() override;
     QImage toImage() const override;
 
+    void setSubRect(const QRectF &) override;
+
 public Q_SLOTS:
     void markDirtyTexture() override;
     void invalidated() override;
@@ -67,6 +69,7 @@ private:
 
     QSGNode *m_item = nullptr;
     QRectF m_logicalRect;
+    QRectF m_subRect;
     QSize m_pixelSize;
     qreal m_dpr = 1;
     QRhiTexture::Format m_format = QRhiTexture::RGBA8;
