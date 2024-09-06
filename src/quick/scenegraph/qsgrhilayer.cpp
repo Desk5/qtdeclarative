@@ -9,6 +9,7 @@
 
 QSGRhiLayer::QSGRhiLayer(QSGRenderContext *context)
     : QSGLayer(*(new QSGTexturePrivate(this)))
+    , m_subRect(0,0,1,1)
     , m_mipmap(false)
     , m_live(true)
     , m_recursive(false)
@@ -455,12 +456,17 @@ QImage QSGRhiLayer::toImage() const
     return QImage(p, result.pixelSize.width(), result.pixelSize.height(), imageFormat).mirrored();
 }
 
+void QSGRhiLayer::setSubRect(const QRectF & rect)
+{
+    m_subRect = rect;
+}
+
 QRectF QSGRhiLayer::normalizedTextureSubRect() const
 {
-    return QRectF(m_mirrorHorizontal ? 1 : 0,
-                  m_mirrorVertical ? 0 : 1,
-                  m_mirrorHorizontal ? -1 : 1,
-                  m_mirrorVertical ? 1 : -1);
+    return QRectF(m_mirrorHorizontal ? m_subRect.right() : m_subRect.left(),
+                  m_mirrorVertical ? m_subRect.top() : m_subRect.bottom(),
+                  m_mirrorHorizontal ? -m_subRect.width() : m_subRect.width(),
+                  m_mirrorVertical ? m_subRect.height() : -m_subRect.height());
 }
 
 #include "moc_qsgrhilayer_p.cpp"

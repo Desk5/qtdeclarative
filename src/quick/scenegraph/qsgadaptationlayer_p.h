@@ -199,6 +199,8 @@ public:
     Q_SLOT virtual void markDirtyTexture() = 0;
     Q_SLOT virtual void invalidated() = 0;
 
+    virtual void setSubRect(const QRectF &) {}
+
 Q_SIGNALS:
     void updateRequested();
     void scheduledUpdateCompleted();
