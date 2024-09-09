@@ -372,10 +372,10 @@ QImage QQuickSpriteEngine::assembledImage(int maxSize)
 
         //Check that the frame sizes are the same within one sprite
         if (!state->m_frameWidth)
-            state->m_frameWidth = img.width() / state->frames();
+            state->m_frameWidth = img.width() / state->frames() / img.devicePixelRatio();
 
         if (!state->m_frameHeight)
-            state->m_frameHeight = img.height();
+            state->m_frameHeight = img.height() / img.devicePixelRatio();
 
         pixelRatio = qMax(pixelRatio, state->devicePixelRatio());
 
