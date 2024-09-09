@@ -471,6 +471,11 @@ void QQuickAnimatedSprite::itemChange(ItemChange change, const ItemChangeData &v
     Q_D(QQuickAnimatedSprite);
     if (change == ItemVisibleHasChanged && d->m_running && !d->m_paused)
         maybeUpdate();
+
+    // If the screen DPI changed, reload sprites.
+    if (change == ItemDevicePixelRatioHasChanged)
+        d->m_sprite->setDevicePixelRatio(value.realValue);
+
     QQuickItem::itemChange(change, value);
 }
 
