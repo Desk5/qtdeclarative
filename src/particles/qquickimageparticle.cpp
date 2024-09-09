@@ -718,8 +718,13 @@ QQuickImageParticle::~QQuickImageParticle()
 
 QQmlListProperty<QQuickSprite> QQuickImageParticle::sprites()
 {
+    auto spriteAppendAndSetDPR = [](QQmlListProperty<QQuickSprite> *p, QQuickSprite* s) {
+        auto self = static_cast<QQuickImageParticle*>(p->object);
+        s->setDevicePixelRatio(self->window() ? self->window()->effectiveDevicePixelRatio() : 1.0);
+        spriteAppend(p, s);
+    };
     return QQmlListProperty<QQuickSprite>(this, &m_sprites,
-                                          spriteAppend, spriteCount, spriteAt,
+                                          spriteAppendAndSetDPR, spriteCount, spriteAt,
                                           spriteClear, spriteReplace, spriteRemoveLast);
 }
 
@@ -2002,6 +2007,17 @@ void QQuickImageParticle::commit(int gIdx, int pIdx)
     }
 }
 
+void QQuickImageParticle::itemChange(ItemChange change, const ItemChangeData &value)
+{
+    // If the screen DPI changed, reload sprites.
+    if (change == ItemDevicePixelRatioHasChanged || change == ItemSceneChange) {
+        auto dpr = window() ? window()->effectiveDevicePixelRatio() : 1.0;
+        for(auto sprite: m_sprites) 
+            sprite->setDevicePixelRatio(dpr);
+        createEngine();
+    }
+    QQuickParticlePainter::itemChange(change, value);
+}
 
 
 QT_END_NAMESPACE

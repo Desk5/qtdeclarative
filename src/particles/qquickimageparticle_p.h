@@ -347,6 +347,7 @@ protected:
     void commit(int gIdx, int pIdx) override;
 
     QSGNode *updatePaintNode(QSGNode *, UpdatePaintNodeData *) override;
+    void itemChange(ItemChange, const ItemChangeData &) override;
     bool prepareNextFrame(QSGNode**);
     void buildParticleNodes(QSGNode**);
 

@@ -136,7 +136,11 @@ public:
 
     void setDevicePixelRatio(qreal dpr)
     {
+        if(m_devicePixelRatio == dpr)
+            return;
+
         m_devicePixelRatio = dpr;
+        startImageLoading();
     }
 
     qreal devicePixelRatio() const
@@ -291,6 +295,7 @@ private:
     int m_rowStartX;
 
     QUrl m_source;
+    QUrl m_loadedUrl;
     bool m_reverse;
     int m_frameHeight;
     int m_frameWidth;
@@ -304,6 +309,8 @@ private:
     bool m_frameSync;
     qreal m_devicePixelRatio;
     QQuickPixmap m_pix;
+
+    QUrl resolveSource(const QQmlContext *c);
 };
 
 QT_END_NAMESPACE

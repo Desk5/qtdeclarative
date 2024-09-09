@@ -222,25 +222,43 @@ int QQuickSprite::variedDuration() const //Deals with precedence when multiple d
     return 1000; //When nothing set
 }
 
+QUrl QQuickSprite::resolveSource(const QQmlContext *context)
+{
+    if (m_source.isEmpty())
+        return QUrl();
+
+    const QUrl resolvedUrl = context ? context->resolvedUrl(m_source) : m_source;
+    QUrl loadUrl = resolvedUrl;
+
+    qreal actualDevicePixelRatio = m_devicePixelRatio;
+    QQuickImageBase::resolve2xLocalFile(resolvedUrl, m_devicePixelRatio, &loadUrl,
+                                        &actualDevicePixelRatio);
+    return loadUrl;
+}
+
 void QQuickSprite::startImageLoading()
 {
-    m_pix.clear(this);
+    QUrl loadUrl;
+    QQmlEngine *e = nullptr;
     if (!m_source.isEmpty()) {
         const QQmlContext *context = qmlContext(this);
-        QQmlEngine *e = context ? context->engine() : nullptr;
+        e = context ? context->engine() : nullptr;
         if (!e) { //If not created in QML, you must set the QObject parent to the QML element so this can work
             context = qmlContext(parent());
             e = context ? context->engine() : nullptr;
             if (!e)
                 qWarning() << "QQuickSprite: Cannot find QQmlEngine - this class is only for use in QML and may not work";
         }
-        const QUrl resolvedUrl = context ? context->resolvedUrl(m_source) : m_source;
-        QUrl loadUrl = resolvedUrl;
-        QQuickImageBase::resolve2xLocalFile(resolvedUrl, m_devicePixelRatio, &loadUrl,
-                                            &m_devicePixelRatio);
-
-        m_pix.load(e, loadUrl);
+        loadUrl = resolveSource(context);
     }
+
+    if(loadUrl == m_loadedUrl)
+        return;
+
+    m_loadedUrl = loadUrl;
+    m_pix.clear(this);
+    if(!m_loadedUrl.isEmpty())
+        m_pix.load(e, m_loadedUrl);
 }
 
 QT_END_NAMESPACE
