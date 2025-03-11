@@ -477,7 +477,7 @@ void QQuickDeliveryAgentPrivate::setFocusInScope(QQuickItem *scope, QQuickItem *
         }
     }
 
-    if (newActiveFocusItem && (rootItem->hasFocus() || (rootItem->window()->type() == Qt::Popup))) {
+    if (newActiveFocusItem && (rootItem->hasFocus() || (rootItem->window()->type() & Qt::Popup))) {
         activeFocusItem = newActiveFocusItem;
 
         QQuickItemPrivate::get(newActiveFocusItem)->activeFocus = true;
