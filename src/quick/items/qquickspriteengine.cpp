@@ -414,6 +414,7 @@ QImage QQuickSpriteEngine::assembledImage(int maxSize)
     image.setDevicePixelRatio(pixelRatio);
     image.fill(0);
     QPainter p(&image);
+    p.setRenderHint(QPainter::SmoothPixmapTransform, true);
     int y = 0;
     for (QQuickSprite* state : std::as_const(m_sprites)) {
         QImage img(state->m_pix.image());
