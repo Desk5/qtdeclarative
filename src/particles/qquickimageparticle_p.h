@@ -348,6 +348,7 @@ protected:
 
     QSGNode *updatePaintNode(QSGNode *, UpdatePaintNodeData *) override;
     void itemChange(ItemChange, const ItemChangeData &) override;
+    void updateDpr();
     bool prepareNextFrame(QSGNode**);
     void buildParticleNodes(QSGNode**);
 

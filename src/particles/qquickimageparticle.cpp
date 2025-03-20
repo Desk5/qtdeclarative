@@ -2034,15 +2034,26 @@ void QQuickImageParticle::commit(int gIdx, int pIdx)
 void QQuickImageParticle::itemChange(ItemChange change, const ItemChangeData &value)
 {
     // If the screen DPI changed, reload sprites.
-    if (change == ItemDevicePixelRatioHasChanged || change == ItemSceneChange) {
-        auto dpr = window() ? window()->effectiveDevicePixelRatio() : 1.0;
-        for(auto sprite: m_sprites) 
-            sprite->setDevicePixelRatio(dpr);
-        createEngine();
+    if (change == ItemDevicePixelRatioHasChanged)
+        updateDpr();
+
+    if(change == ItemSceneChange) {
+        // This one gets usually called inside our parent's destructor. In that case
+        // we will be destroyed right after that, so we don't want to spend time on
+        // re-rendering the sprites (& trigger warnings about a missing QML context)
+            QMetaObject::invokeMethod(this, &QQuickImageParticle::updateDpr, Qt::QueuedConnection);
     }
+
     QQuickParticlePainter::itemChange(change, value);
 }
 
+void QQuickImageParticle::updateDpr()
+{
+  auto dpr = window() ? window()->effectiveDevicePixelRatio() : 1.0;
+  for(auto sprite: m_sprites)
+    sprite->setDevicePixelRatio(dpr);
+  createEngine();
+}
 
 QT_END_NAMESPACE
 
