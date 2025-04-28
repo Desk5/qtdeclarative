@@ -1753,6 +1753,9 @@ void QQuickImageParticle::initialize(int gIdx, int pIdx)
             m_spriteEngine->setCount(spriteIdx+1);
     }
 
+    if(m_startedImageLoading != 2)
+        return;
+
     float rotation;
     float rotationVelocity;
     uchar autoRotate;
