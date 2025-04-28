@@ -138,7 +138,7 @@ public:
 
     void scheduleRenderJob(QRunnable *job, RenderStage schedule);
 
-    qreal effectiveDevicePixelRatio() const;
+    virtual qreal effectiveDevicePixelRatio() const;
 
     QSGRendererInterface *rendererInterface() const;
 
