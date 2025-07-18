@@ -43,6 +43,15 @@ extern Q_GUI_EXPORT bool qt_sendShortcutOverrideEvent(QObject *o, ulong timestam
 bool QQuickDeliveryAgentPrivate::subsceneAgentsExist(false);
 QQuickDeliveryAgent *QQuickDeliveryAgentPrivate::currentEventDeliveryAgent(nullptr);
 
+
+// Desk5 Telemetry patch
+static SGDATelemetryHandler sg_DATelemetryHandler = nullptr;
+SGDATelemetryHandler sgInstallDATelemetryHandler(SGDATelemetryHandler new_handler) {
+    auto previous_handler = sg_DATelemetryHandler;
+    sg_DATelemetryHandler = new_handler;
+    return previous_handler;
+}
+
 static bool allowSyntheticRightClick()
 {
     static int allowRightClick = -1;
@@ -2321,6 +2330,8 @@ bool QQuickDeliveryAgentPrivate::deliverPressOrReleaseEvent(QPointerEvent *event
 
     QVector<QPointer<QQuickItem>> safeTargetItems(targetItems.begin(), targetItems.end());
 
+    if (sg_DATelemetryHandler && safeTargetItems.empty()) sg_DATelemetryHandler(rootItem, *event);
+
     for (auto &item : safeTargetItems) {
         if (item.isNull())
             continue;
@@ -2397,6 +2408,9 @@ void QQuickDeliveryAgentPrivate::deliverMatchingPointsToItem(QQuickItem *item, b
     // TODO: remove isGrabber then?
     if (isMouse) {
         auto button = static_cast<QSinglePointEvent *>(pointerEvent)->button();
+
+        if (sg_DATelemetryHandler) sg_DATelemetryHandler(item, *pointerEvent);
+
         if ((isGrabber && button == Qt::NoButton) || item->acceptedMouseButtons().testFlag(button)) {
             // The only reason to already have a mouse grabber here is
             // synthetic events - flickable sends one when setPressDelay is used.

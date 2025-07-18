@@ -65,6 +65,10 @@ Q_DECLARE_LOGGING_CATEGORY(lcDirty)
 #    define Q_QUICK_AUTOTEST_EXPORT
 #endif
 
+// Desk5 Telemetry patch
+typedef void (*SGDATelemetryHandler)(const class QQuickItem *item, const class QPointerEvent &pointerEvent);
+SGDATelemetryHandler Q_QUICK_EXPORT sgInstallDATelemetryHandler(SGDATelemetryHandler);
+
 QT_END_NAMESPACE
 
 #endif // QTQUICKGLOBAL_P_H
